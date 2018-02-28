@@ -8,11 +8,15 @@ The great thing is that these are actual and up-to-date car prices. This script 
 Most of the visual and statistical analysis can be found in the accompanying Jupyter Notebook. Required packages are given in the requirements.txt file. To install them, create a conda environment (if using [Anaconda](https://www.anaconda.com)) and then install the required packages listed in the requirements.txt file. 
 
 Type
+
 `conda create -n env_name python=3.6`
+
 `pip install-r requirements.txt`
 
 from the terminal. 
 
 Scraping script will output a .csv file in your working directory. To run type 
+
 `python scrape.py`
+
 from the terminal. 

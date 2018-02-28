@@ -40,7 +40,7 @@ while True:
     next_link_number = no_link_number.next_sibling.next_sibling.text
 
     ## Condition for clicking next
-    if int(no_link_number)+1== next_link_number:
+    if int(no_link_number)+1== int(next_link_number):
         go_to_next = browser.find_element_by_partial_link_text('Next')
         go_to_next.click()
     # break out of loop

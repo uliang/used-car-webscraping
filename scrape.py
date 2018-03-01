@@ -7,6 +7,7 @@ Created on Wed Feb 28 21:46:53 2018
 """
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup, SoupStrainer
 import numpy as np
 import pandas as pd
@@ -20,14 +21,14 @@ def strip_text(x):
 
 def main(): 
 #%% Navigation and get listings
-    options = webdriver.ChromeOptions()
-    options.add_argument("headless")
+    # options = webdriver.ChromeOptions()
+    # options.add_argument("headless")
+    options = None
     browser = webdriver.Chrome(chrome_options=options)
     browser.get('http://www.sgcarmart.com/used_cars/listing.php')
     sift = SoupStrainer('div', id='contentblank')
     #time.sleep(5)
     
-    #%% Search for next page button and click.
     counter = 1
     while True:
         print("Reading page %d" % counter)
@@ -55,20 +56,28 @@ def main():
     
         ## Condition for clicking next
         if int(no_link_number)+1 == int(next_link_number) and counter < 3:
-            go_to_next = browser.find_elements_by_partial_link_text("Next")
+            
+            #%% Search for next page button and click.
+            go_to_next = browser.find_element_by_partial_link_text("Next")
             print(go_to_next)
             try:
-                go_to_next[1].click()
+                go_to_next.click()
             except:
-                go_to_next[0].click()
-            finally:
-                print("Unable to continue")
-                break
+                print("pausing")
+                action = ActionChains(browser)
+                action.pause(20)
+                action.move_to_element(go_to_next)
+                action.click(go_to_next)
+                action.perform()
+            # finally:
+            #     print("Unable to continue")
+            #     print("Time taken: %.4f s" % (time.time()-start))
+                # break
         else:
             break
         
         counter += 1
-        print("Time taken: %.4f s" % time.time()-start)
+        print("Time taken: %.4f s" % (time.time()-start))
         
     browser.quit()
     print("Done")

@@ -9,9 +9,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup, SoupStrainer
+from progress.spinner import Spinner
 import numpy as np
 import pandas as pd
 import time
+
 
 #%% Helper functions
 def strip_text(x):
@@ -20,19 +22,17 @@ def strip_text(x):
                 in ['', 'Available', 'Add to shortlist', 'Tags:']])
 
 def main(): 
-#%% Navigation and get listings
-    # options = webdriver.ChromeOptions()
-    # options.add_argument("headless")
-    options = None
+
+    options = webdriver.ChromeOptions()
+    options.add_argument("headless")
     browser = webdriver.Chrome(chrome_options=options)
     browser.get('http://www.sgcarmart.com/used_cars/listing.php')
     sift = SoupStrainer('div', id='contentblank')
-    #time.sleep(5)
+    spin = Spinner('Scraping...')
     
     counter = 1
     while True:
-        # TODO: Implement progress spinner. 
-        print("Reading page %d" % counter)
+        
         start = time.time() 
         # Get listings
         html = BeautifulSoup(browser.page_source, "html.parser", parse_only=sift)
@@ -52,38 +52,32 @@ def main():
         frame = pd.DataFrame(data_array, columns=fields)
         frame.to_csv("./data/%d.csv" % counter)
         
+        ## Condition for clicking next
         no_link = html.find('span', class_='pageNoLink')
-        no_link_number = no_link.text
         next_link_number = no_link.next_sibling.next_sibling.text
     
-        ## Condition for clicking next
-        if int(no_link_number)+1 == int(next_link_number) and counter < 3:
+        if next_link_number.isalnum():
             
             #%% Search for next page button and click.
             go_to_next = browser.find_element_by_partial_link_text("Next")
-            print(go_to_next)
             try:
                 go_to_next.click()
             except:
-                print("pausing")
+                #print("pausing")
                 action = ActionChains(browser)
                 action.pause(20)
                 action.move_to_element(go_to_next)
                 action.click(go_to_next)
                 action.perform()
-            # finally:
-            #     print("Unable to continue")
-            #     print("Time taken: %.4f s" % (time.time()-start))
-                # break
         else:
             break
         
         counter += 1
         print("Time taken: %.4f s" % (time.time()-start))
+        spin.next()
         
     browser.quit()
     print("Done")
-
 #%%
 # TODO: Append to master list
 

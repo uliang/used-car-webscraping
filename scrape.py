@@ -44,7 +44,8 @@ def main():
         _data = [map(str.strip, _dat) for _dat in _data]   
         data = [list(filter(strip_text, _dat)) for _dat in _data]
         
-        fields = ["make", "list price", "depreciation", "date registered", "eng cap", "mileage", "date posted"]    
+        fields = ["make", "list price", "depreciation", "date registered",
+                  "eng cap", "mileage", "date posted"]    
         
         data_array = np.array([dat[:6]+[dat[-2]] for dat in data])
         frame = pd.DataFrame(data_array, columns=fields)

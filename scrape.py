@@ -31,6 +31,7 @@ def main():
     
     counter = 1
     while True:
+        # TODO: Implement progress spinner. 
         print("Reading page %d" % counter)
         start = time.time() 
         # Get listings

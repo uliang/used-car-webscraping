@@ -58,9 +58,9 @@ def main(headless, max_page):
         data = [list(filter(strip_text, _dat)) for _dat in _data]
         
         fields = ["make", "list price", "depreciation", "date registered",
-                  "eng cap", "mileage", "date posted"]    
+                  "eng cap", "mileage","veh type", "date posted"]    
         
-        data_array = np.array([dat[:6]+[dat[-2]] for dat in data])
+        data_array = np.array([dat[:7]+[dat[-2]] for dat in data])
         frame = pd.DataFrame(data_array, columns=fields)
         frame.to_csv("./data/%d.csv" % counter)
         spin.next()

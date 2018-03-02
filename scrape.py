@@ -24,7 +24,7 @@ def strip_text(x):
 
 #%% Main application loop
 @click.command()
-@click.option('--headless/--no-headless', default=False, help='Whether not to show browsing'+
+@click.option('--headless/--no-headless', default=True, help='Whether to show browsing'+
               ' window or not')
 @click.option('--max_page', default=1, help='Max number of pages to scrape starting' +
               ' from the most recent listings. Default is 1.'+

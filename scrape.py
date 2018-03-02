@@ -35,6 +35,8 @@ def main(headless, max_page):
     options = webdriver.ChromeOptions()
     options.add_argument('log-level=3')
     if headless: options.add_argument("headless")
+    
+    print("Accessing website\n")
 
     browser = webdriver.Chrome(chrome_options=options)
     browser.get('http://www.sgcarmart.com/used_cars/listing.php')

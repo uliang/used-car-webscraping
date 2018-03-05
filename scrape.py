@@ -15,12 +15,21 @@ import pandas as pd
 import time
 import click
 import os
+import re
 
 #%% Helper functions
+SEARCH_POSTED = lambda s: re.search('Posted', s) is not None
+
 def strip_text(x):
     return all([x != split_string
                 for split_string
-                in ['', 'Available', 'Add to shortlist', 'Tags:']])
+                in [',', 'Available', 'Add to shortlist', 'Tags:']])
+
+def get_posted_date(dat):
+    mask = [SEARCH_POSTED(s) for s in dat]
+    posted_index = mask.index(True)
+    return dat[posted_index]
+    
 
 #%% Main application loop
 @click.command()
@@ -53,14 +62,13 @@ def main(headless, max_page):
                                            'style': 'table-layout: fixed;'})
         spin.next()
         # Data processing
-        _data = [listing.get_text().split('\n') for listing in listings]
-        _data = [map(str.strip, _dat) for _dat in _data]   
-        data = [list(filter(strip_text, _dat)) for _dat in _data]
+        data = [list(filter(strip_text, listing.stripped_strings)) for listing 
+                in listings]
         
         fields = ["make", "list price", "depreciation", "date registered",
                   "eng cap", "mileage","veh type", "date posted"]    
         
-        data_array = np.array([dat[:7]+[dat[-2]] for dat in data])
+        data_array = np.array([dat[:7]+[get_posted_date(dat)] for dat in data])
         frame = pd.DataFrame(data_array, columns=fields)
         frame.to_csv("./data/%d.csv" % counter)
         spin.next()
@@ -84,11 +92,11 @@ def main(headless, max_page):
                 action.move_to_element(go_to_next)
                 action.click(go_to_next)
                 action.perform()
+            finally:
+                counter += 1
+                spin.next()  
         else:
             break
-        
-        counter += 1
-        spin.next()
         
     browser.quit()
     time_taken = str(timedelta(seconds = time.time()-start))
